@@ -2,6 +2,7 @@ import os
 import sys
 import click
 import logging
+import psutil
 from sagemaker_knockout.knockout import knockout_loop
 from daemonize import Daemonize
 
@@ -15,11 +16,6 @@ def setup_logger(dst):
             filename=dst, format='%(asctime)s - %(message)s', level=logging.INFO)
 
 
-def daemon_action(logger_dst):
-    setup_logger(logger_dst)
-    knockout_loop()
-
-
 @click.group()
 def cli():
     pass
@@ -30,13 +26,31 @@ def cli():
 @click.option('--logfile', default='/var/log/sagemaker_knockout.log')
 @click.option('--pidfile', default='/var/run/sagemaker_knockout.pid')
 def run(daemonize, logfile, pidfile):
+    setup_logger(dst=logfile)
     if daemonize:
+        if logfile == '-':
+            print('Logfile cannot be stdout if --daemonize is passed')
+            exit(1)
         daemon = Daemonize(app='sagemaker_knockout',
-                           pid=pidfile, action=daemon_action)
+                           pid=pidfile, action=knockout_loop, auto_close_fds=False, logger=logging.getLogger(''))
         daemon.start()
     else:
-        setup_logger(dst=logfile)
         knockout_loop()
+
+
+@cli.command()
+@click.option('--pidfile', default='/var/run/sagemaker_knockout.pid')
+def check_daemon(pidfile):
+    if not os.path.exists(pidfile):
+        print(f'🔴 Pidfile {pidfile} does not exist')
+        exit(1)
+
+    with open(pidfile, 'r') as fd:
+        pid = int(fd.read())
+        if not psutil.pid_exists(pid):
+            print(f'🔴 Process with pid {pid} does not exist!')
+            exit(1)
+        print('✅ Daemon found')
 
 
 if __name__ == "__main__":
