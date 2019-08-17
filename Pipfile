@@ -15,6 +15,7 @@ setuptools = "*"
 wheel = "*"
 twine = "*"
 autopep8 = "*"
+click = "*"
 
 [requires]
 python_version = "3.7"

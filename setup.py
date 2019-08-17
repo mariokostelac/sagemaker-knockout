@@ -16,7 +16,8 @@ setuptools.setup(
     install_requires=[
         "psutil",
         "gputil",
-        "daemonize"
+        "daemonize",
+        "click",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

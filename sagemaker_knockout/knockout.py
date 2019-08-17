@@ -46,25 +46,14 @@ def get_jupyter_connections():
     return connections
 
 
-def setup_logger():
-    fh = logging.FileHandler(os.environ.get(
-        'LOGFILE', '/var/log/sagemaker_knockout.log'))
-    fmt = logging.Formatter('%(asctime)s - %(message)s')
-    fh.setFormatter(fmt)
-    logger = logging.getLogger('')
-    logger.addHandler(fh)
-    logger.setLevel(logging.INFO)
-
-
 CPU_THRESHOLD = 10
 GPU_THRESHOLD = 5
 JUPYTER_CONNS_THRESHOLD = 1
 CHECK_INTERVAL = 30
 CONSECUTIVE_INTERVALS_ACTIVE = 3
 
-
-def main():
-    setup_logger()
+def _loop():
+    logging.info("Starting the watcher loop.")
     now = datetime.now()
     cpu_last_active, gpu_last_active, jupyter_last_active = now, now, now
     cpu_active_intervals, gpu_active_intervals = 0, 0
@@ -106,3 +95,10 @@ def main():
             logging.info("Shutting down...")
             os.system("shutdown 0")
         sleep(CHECK_INTERVAL)
+
+
+def knockout_loop():
+    try:
+        _loop()
+    except Exception as e:
+        logging.exception("Knockout loop crashed with exception %s", e)

@@ -20,7 +20,7 @@ in it.
 
 To run the current version, type
 ```bash
-NO_DEAMON=1 PIDFILE=test.pid LOGFILE=test.log python -m sagemaker_knockout
+pipenv run python -m sagemaker_knockout run
 ```
 
 If you do not have something listening to port 8443, run `nc -l localhost 8443` in another tab.
