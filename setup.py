@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sagemaker-knockout",
-    version="0.0.3",
+    version="0.0.4",
     author="Mario Kostelac",
     author_email="mario.kostelac@gmail.com",
-    description="A small example package",
+    description="Shutdown your SageMaker instance when it's not active",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mariokostelac/sagemaker-knockout",

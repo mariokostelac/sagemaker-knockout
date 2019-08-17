@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+autopep8 = "*"
 
 [packages]
 psutil = "*"
@@ -13,7 +14,7 @@ daemonize = "*"
 setuptools = "*"
 wheel = "*"
 twine = "*"
-sagemaker-knockout-mariokostelac = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.7"
