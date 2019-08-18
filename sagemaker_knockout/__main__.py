@@ -3,6 +3,7 @@ import sys
 import click
 import logging
 import psutil
+import functools
 from sagemaker_knockout.knockout import knockout_loop
 from daemonize import Daemonize
 
@@ -25,17 +26,20 @@ def cli():
 @click.option('--daemonize/--no-daemonize', default=False)
 @click.option('--logfile', default='/var/log/sagemaker_knockout.log')
 @click.option('--pidfile', default='/var/run/sagemaker_knockout.pid')
-def run(daemonize, logfile, pidfile):
+@click.option('-i', '--max-inactive-minutes', default=60)
+def run(daemonize, logfile, pidfile, max_inactive_minutes):
     setup_logger(dst=logfile)
+    max_inactive_minutes = int(max_inactive_minutes)
     if daemonize:
         if logfile == '-':
             print('Logfile cannot be stdout if --daemonize is passed')
             exit(1)
+        action = functools.partial(knockout_loop, max_inactive_minutes)
         daemon = Daemonize(app='sagemaker_knockout',
-                           pid=pidfile, action=knockout_loop, auto_close_fds=False, logger=logging.getLogger(''))
+                           pid=pidfile, action=action, auto_close_fds=False, logger=logging.getLogger(''))
         daemon.start()
     else:
-        knockout_loop()
+        knockout_loop(max_inactive_minutes)
 
 
 @cli.command()

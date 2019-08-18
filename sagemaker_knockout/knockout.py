@@ -52,11 +52,12 @@ JUPYTER_CONNS_THRESHOLD = 1
 CHECK_INTERVAL = 30
 CONSECUTIVE_INTERVALS_ACTIVE = 3
 
-def _loop():
-    logging.info("Starting the watcher loop.")
+def _loop(max_inactive_minutes):
+    logging.info("Starting the watcher loop. Max inactivity interval %sm", max_inactive_minutes)
     now = datetime.now()
     cpu_last_active, gpu_last_active, jupyter_last_active = now, now, now
     cpu_active_intervals, gpu_active_intervals = 0, 0
+    max_inactive_interval = timedelta(minutes=max_inactive_minutes)
     while True:
         cpu_load, gpu_load, jupyter_connections = get_cpu_load(
         ), get_gpu_load(), get_jupyter_connections()
@@ -88,17 +89,17 @@ def _loop():
         logging.info(msg)
 
         now = datetime.now()
-        cpu_inactive = (now - cpu_last_active) > timedelta(hours=1)
-        gpu_inactive = (now - gpu_last_active) > timedelta(hours=1)
-        jupyter_inactive = (now - jupyter_last_active) > timedelta(hours=1)
+        cpu_inactive = (now - cpu_last_active) > max_inactive_interval
+        gpu_inactive = (now - gpu_last_active) > max_inactive_interval
+        jupyter_inactive = (now - jupyter_last_active) > max_inactive_interval
         if cpu_inactive and gpu_inactive and jupyter_inactive:
             logging.info("Shutting down...")
             os.system("shutdown 0")
         sleep(CHECK_INTERVAL)
 
 
-def knockout_loop():
+def knockout_loop(max_inactive_minutes):
     try:
-        _loop()
+        _loop(max_inactive_minutes)
     except Exception as e:
         logging.exception("Knockout loop crashed with exception %s", e)
