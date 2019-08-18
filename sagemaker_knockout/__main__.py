@@ -24,7 +24,7 @@ def cli():
 
 @cli.command()
 @click.option('--daemonize/--no-daemonize', default=False)
-@click.option('--logfile', default='/var/log/sagemaker_knockout.log')
+@click.option('--logfile', default='/home/ec2-user/SageMaker/sagemaker_knockout.log')
 @click.option('--pidfile', default='/var/run/sagemaker_knockout.pid')
 @click.option('-i', '--max-inactive-minutes', default=60)
 def run(daemonize, logfile, pidfile, max_inactive_minutes):
