@@ -18,6 +18,7 @@ setuptools.setup(
         "gputil",
         "daemonize",
         "click",
+        "boto3",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

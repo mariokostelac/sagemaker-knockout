@@ -27,19 +27,20 @@ def cli():
 @click.option('--logfile', default='/home/ec2-user/SageMaker/sagemaker_knockout.log')
 @click.option('--pidfile', default='/var/run/sagemaker_knockout.pid')
 @click.option('-i', '--max-inactive-minutes', default=60)
-def run(daemonize, logfile, pidfile, max_inactive_minutes):
+@click.option('--notebook-instance-name', default=None, help='Notebook instance name the program is running on. Autodetected by default!')
+def run(daemonize, logfile, pidfile, max_inactive_minutes, notebook_instance_name):
     setup_logger(dst=logfile)
     max_inactive_minutes = int(max_inactive_minutes)
     if daemonize:
         if logfile == '-':
             print('Logfile cannot be stdout if --daemonize is passed')
             exit(1)
-        action = functools.partial(knockout_loop, max_inactive_minutes)
+        action = functools.partial(knockout_loop, max_inactive_minutes=max_inactive_minutes, notebook_instance_name=notebook_instance_name)
         daemon = Daemonize(app='sagemaker_knockout',
                            pid=pidfile, action=action, auto_close_fds=False, logger=logging.getLogger(''))
         daemon.start()
     else:
-        knockout_loop(max_inactive_minutes)
+        knockout_loop(max_inactive_minutes=max_inactive_minutes, notebook_instance_name=notebook_instance_name)
 
 
 @cli.command()

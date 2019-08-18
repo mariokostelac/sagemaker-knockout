@@ -3,9 +3,13 @@ import GPUtil
 import os
 import sys
 import logging
+import json
+import boto3
 from time import sleep
 from pprint import pprint as pp
 from datetime import datetime, timedelta
+
+sagemaker = boto3.client('sagemaker')
 
 
 def netcons(listen_port=None, status=None, pid=None):
@@ -46,14 +50,31 @@ def get_jupyter_connections():
     return connections
 
 
+def detect_notebook_instance_name():
+    with open('/etc/opt/ml/jobs/job.json', 'r') as fd:
+        ml_job = json.load(fd)
+        return ml_job['ResourceName']
+
+
+def shutdown(notebook_instance_name):
+    sagemaker.stop_notebook_instance(
+        NotebookInstanceName=notebook_instance_name)
+
+
 CPU_THRESHOLD = 10
 GPU_THRESHOLD = 5
 JUPYTER_CONNS_THRESHOLD = 1
 CHECK_INTERVAL = 30
 CONSECUTIVE_INTERVALS_ACTIVE = 3
 
-def _loop(max_inactive_minutes):
-    logging.info("Starting the watcher loop. Max inactivity interval %sm", max_inactive_minutes)
+
+def _loop(max_inactive_minutes, notebook_instance_name):
+    if notebook_instance_name is None:
+        notebook_instance_name = detect_notebook_instance_name()
+    logging.info('Instance name: %s', notebook_instance_name)
+
+    logging.info(
+        "Starting the watcher loop. Max inactivity interval %sm", max_inactive_minutes)
     now = datetime.now()
     cpu_last_active, gpu_last_active, jupyter_last_active = now, now, now
     cpu_active_intervals, gpu_active_intervals = 0, 0
@@ -94,12 +115,12 @@ def _loop(max_inactive_minutes):
         jupyter_inactive = (now - jupyter_last_active) > max_inactive_interval
         if cpu_inactive and gpu_inactive and jupyter_inactive:
             logging.info("Shutting down...")
-            os.system("shutdown 0")
+            shutdown(notebook_instance_name)
         sleep(CHECK_INTERVAL)
 
 
-def knockout_loop(max_inactive_minutes):
+def knockout_loop(max_inactive_minutes, notebook_instance_name):
     try:
-        _loop(max_inactive_minutes)
+        _loop(max_inactive_minutes, notebook_instance_name)
     except Exception as e:
         logging.exception("Knockout loop crashed with exception %s", e)
