@@ -13,7 +13,7 @@ It tracks three metrics to detect the activity. If any of them report as active,
 - **GPU usage** - if you've left your laptop closed, but are running CPU intensive operations, we'll detect that (threshold is set to 10%)
 
 ## 🧠 Setup
-In order to make sure you don't need to remember to run this program to shut down your machine 😅, the most covenient setup is to change the SageMaker's lifecycle configuration.
+In order to make sure you don't need to remember to run this program to shut down your machine 😅, the most convenient setup is to change the SageMaker's lifecycle configuration.
 
 Add this snippet of code to "Start notebook" script:
 ```bash
