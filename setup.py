@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sagemaker-knockout",
-    version="0.0.5",
+    version="0.0.6",
     author="Mario Kostelac",
     author_email="mario.kostelac@gmail.com",
     description="Shutdown your SageMaker instance when it's not active",
