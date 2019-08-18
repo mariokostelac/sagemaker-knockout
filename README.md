@@ -10,7 +10,7 @@ Are you enjoying big powerful, pricey SageMaker instances to experiment with you
 It tracks three metrics to detect the activity. If any of them report as active, machine will not shut down.
 - **Jupyter connections** - if Jupyter server has incoming connections opened, it means you have an open console or notebook tab (with laptop opened). We do not want to shut the machine down in that case
 - **GPU usage** - if you've left your laptop closed, but are running GPU intensive operations, we'll detect that (threshold is set to 5%)
-- **GPU usage** - if you've left your laptop closed, but are running CPU intensive operations, we'll detect that (threshold is set to 10%)
+- **CPU usage** - if you've left your laptop closed, but are running CPU intensive operations, we'll detect that (threshold is set to 10%)
 
 ## 🧠 Setup
 In order to make sure you don't need to remember to run this program to shut down your machine 😅, the most convenient setup is to change the SageMaker's lifecycle configuration.
