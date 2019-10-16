@@ -33,10 +33,13 @@ def listen_proc(port):
 
 
 def get_gpu_load():
-    load = [gpu.load for gpu in GPUtil.getGPUs()]
-    if not load:
+    try:
+        load = [gpu.load for gpu in GPUtil.getGPUs()]
+        if not load:
+            return 0.0
+        return sum(load)/len(load)*100
+    except:
         return 0.0
-    return sum(load)/len(load)*100
 
 
 def get_cpu_load(interval=1):
