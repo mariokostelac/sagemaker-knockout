@@ -1,4 +1,4 @@
-**NOTE: this repo is not maintained anymore. It is replaced by https://biasandvariance.com/sagemaker-stop-your-instances-when-idle/**
+**NOTE: this repo is not maintained anymore. It is replaced by https://github.com/mariokostelac/sagemaker-setup/**
 
 # 🥊 sagemaker-knockout
 Knock the SageMaker instance out when it's not active!
